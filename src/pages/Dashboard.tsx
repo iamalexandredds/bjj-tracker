@@ -1,57 +1,73 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, TrendingUp } from 'lucide-react';
-
-// Simuliamo i dati per ora, così l'app non crasha se il login non è pronto
-const stats = { techniquesLearned: 12, weeklyProgress: 65 };
-const profile = { full_name: 'Atleta', belt: 'blue', stripes: 2 };
+import { BookOpen, TrendingUp, Award, Clock } from 'lucide-react';
 
 export default function Dashboard() {
+  const profile = { full_name: 'Atleta', belt: 'Blue', stripes: 2 };
+
   return (
-    <div className="p-8 space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="p-8 max-w-7xl mx-auto space-y-10">
+      {/* Header con stile Lovable */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-border">
         <div>
-          <h1 className="text-3xl font-bold font-display">
-            Benvenuto, {profile.full_name}! 🥋
+          <h1 className="text-4xl font-extrabold tracking-tight">
+            Oss, {profile.full_name}! 🥋
           </h1>
-          <p className="text-muted-foreground mt-1">
-            Traccia il tuo percorso BJJ
+          <p className="text-muted-foreground text-lg mt-2">
+            Il tuo viaggio verso la Cintura Nera continua.
           </p>
+        </div>
+        
+        {/* Simulazione BeltBadge */}
+        <div className="flex items-center gap-4 bg-secondary/50 p-4 rounded-2xl border border-primary/20">
+          <div className="h-10 w-24 bg-blue-600 rounded shadow-[0_0_15px_rgba(37,99,235,0.4)] flex items-center justify-center border-y-4 border-black">
+            <div className="flex gap-1">
+                {[...Array(profile.stripes)].map((_, i) => (
+                    <div key={i} className="w-1 h-full bg-white"></div>
+                ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-xs uppercase font-bold text-muted-foreground">Grado Attuale</p>
+            <p className="font-bold">{profile.belt} Belt</p>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="bg-card border-border shadow-glow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-              Tecniche Apprese
-            </CardTitle>
-            <BookOpen className="h-5 w-5 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{stats.techniquesLearned}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-border shadow-glow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-              Padronanza Settimanale
-            </CardTitle>
-            <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-              Padronanza Settimanale
-            </CardTitle>
-            <TrendingUp className="h-5 w-5 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">+{stats.weeklyProgress}%</div>
-            <div className="w-full bg-secondary h-2 rounded-full mt-4 overflow-hidden">
-                <div 
-                    className="bg-primary h-full transition-all duration-500" 
-                    style={{ width: `${stats.weeklyProgress}%` }}
-                />
+      {/* Grid delle Statistiche */}
+      <div className="grid gap-6 md:grid-cols-3">
+        <div className="bg-card p-6 rounded-2xl border border-border hover:border-primary/50 transition-all shadow-glow">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-primary/10 rounded-xl text-primary">
+                <BookOpen size={24} />
             </div>
-          </CardContent>
-        </Card>
+            <h3 className="font-bold">Tecniche</h3>
+          </div>
+          <div className="text-3xl font-bold">12</div>
+          <p className="text-xs text-muted-foreground mt-2">4 nuove questa settimana</p>
+        </div>
+
+        <div className="bg-card p-6 rounded-2xl border border-border">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-blue-500/10 rounded-xl text-blue-500">
+                <Clock size={24} />
+            </div>
+            <h3 className="font-bold">Tempo sul mat</h3>
+          </div>
+          <div className="text-3xl font-bold">48h</div>
+          <p className="text-xs text-muted-foreground mt-2">Media: 3 sessioni/sett</p>
+        </div>
+
+        <div className="bg-card p-6 rounded-2xl border border-border">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-amber-500/10 rounded-xl text-amber-500">
+                <Award size={24} />
+            </div>
+            <h3 className="font-bold">Padronanza</h3>
+          </div>
+          <div className="text-3xl font-bold">65%</div>
+          <div className="w-full bg-secondary h-2 rounded-full mt-4 overflow-hidden">
+            <div className="bg-amber-500 h-full w-[65%]"></div>
+          </div>
+        </div>
       </div>
     </div>
   );
