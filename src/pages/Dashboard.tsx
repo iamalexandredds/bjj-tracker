@@ -1,21 +1,27 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AppSidebar } from "./components/layout/AppSidebar";
-import Dashboard from "./pages/Dashboard"; // Proviamo a caricare solo questa
+import React from 'react';
 
-function App() {
+const Dashboard = () => {
   return (
-    <Router>
-      <div className="flex min-h-screen bg-background text-foreground">
-        <AppSidebar />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="*" element={<div className="p-8 text-white">Pagina non trovata</div>} />
-          </Routes>
-        </main>
+    <div className="p-8">
+      <h1 className="text-4xl font-display font-bold gradient-text mb-6">
+        BJJ DASHBOARD
+      </h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-card p-6 rounded-xl border border-border shadow-glow">
+          <h3 className="text-muted-foreground uppercase text-xs font-semibold tracking-wider">Sessioni Totali</h3>
+          <p className="text-3xl font-bold mt-2">24</p>
+        </div>
+        <div className="bg-card p-6 rounded-xl border border-border">
+          <h3 className="text-muted-foreground uppercase text-xs font-semibold tracking-wider">Ore sul Tappeto</h3>
+          <p className="text-3xl font-bold mt-2">36h</p>
+        </div>
+        <div className="bg-card p-6 rounded-xl border border-border">
+          <h3 className="text-muted-foreground uppercase text-xs font-semibold tracking-wider">Grado Attuale</h3>
+          <p className="text-3xl font-bold mt-2 text-blue-500">Cintura Blu</p>
+        </div>
       </div>
-    </Router>
+    </div>
   );
-}
+};
 
-export default App;
+export default Dashboard;
