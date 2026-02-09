@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppSidebar } from "./components/layout/AppSidebar";
-
-function Dashboard() {
-  return <div className="p-8 text-white"><h1>Dashboard BJJ</h1><p>Benvenuto sul tappeto.</p></div>;
-}
+import Dashboard from "./pages/Dashboard";
+import Techniques from "./pages/Techniques";
+import Auth from "./pages/Auth";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -13,8 +13,9 @@ function App() {
         <main className="flex-1 overflow-y-auto">
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            {/* Aggiungi qui le altre rotte quando i componenti sono pronti */}
-            <Route path="*" element={<div className="p-8">Pagina in costruzione...</div>} />
+            <Route path="/techniques" element={<Techniques />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
       </div>
