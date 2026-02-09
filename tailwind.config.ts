@@ -1,20 +1,22 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  darkMode: ["class"],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        border: "hsl(var(--border) / <alpha-value>)",
-        input: "hsl(var(--input) / <alpha-value>)",
-        ring: "hsl(var(--ring) / <alpha-value>)",
-        background: "hsl(var(--background) / <alpha-value>)",
-        foreground: "hsl(var(--foreground) / <alpha-value>)",
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+      },
+      fontFamily: {
+        display: ["Inter", "sans-serif"], // Questo risolve l'errore font-display
       },
     },
   },
-  plugins: [],
+  plugins: [animate],
 } satisfies Config;
