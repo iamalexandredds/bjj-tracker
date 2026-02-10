@@ -1,14 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Legge dai Secrets di Lovable
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+// Prende i dati dai Secrets di Lovable
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Se mancano le chiavi, esporta un client "vuoto" per evitare lo schermo nero
-export const supabase = (supabaseUrl && supabaseAnonKey) 
+// Verifica se l'URL è valido prima di creare il client
+const isValidUrl = supabaseUrl && supabaseUrl.startsWith('https://');
+
+export const supabase = isValidUrl 
   ? createClient(supabaseUrl, supabaseAnonKey)
-  : {} as any; 
+  : null as any;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn("Supabase: Chiavi mancanti nei Secrets. L'app potrebbe non funzionare correttamente.");
+if (!isValidUrl) {
+  console.error("Errore: Supabase URL non valido o mancante nei Secrets.");
 }
