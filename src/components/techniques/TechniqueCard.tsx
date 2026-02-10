@@ -1,22 +1,14 @@
-"use client";
-
 import { ExternalLink, PlayCircle } from 'lucide-react';
-// FIX 1: card minuscolo
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-// FIX 2: BeltBadge è in ui/
-import { BeltBadge } from '@/components/ui/BeltBadge';
-// FIX 3: MasteryIndicator è in components/ (non ui)
-import { MasteryIndicator } from '@/components/ui/MasteryIndicator';
+import { BeltBadge } from '@/components/BeltBadge';
+import { MasteryIndicator } from '@/components/MasteryIndicator';
 import { TECHNIQUE_CATEGORIES, DIFFICULTY_LEVELS, TRAINING_MODES } from '@/lib/constants';
-import type { Database } from '@/integrations/supabase/types';
-
-// Definizione tipo locale per evitare conflitti con Supabase Types non generati
-type Technique = Database['public']['Tables']['techniques']['Row'];
+import type { Tables } from '@/integrations/supabase/types';
 
 interface TechniqueCardProps {
-  technique: Technique;
+  technique: Tables<'techniques'>;
   userMastery?: number;
   onClick?: () => void;
 }
@@ -28,19 +20,27 @@ export function TechniqueCard({ technique, userMastery, onClick }: TechniqueCard
 
   const getDifficultyColor = () => {
     switch (technique.difficulty) {
-      case 'beginner': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'intermediate': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'advanced': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      default: return '';
+      case 'beginner':
+        return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'intermediate':
+        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'advanced':
+        return 'bg-red-500/20 text-red-400 border-red-500/30';
+      default:
+        return '';
     }
   };
 
   const getModeColor = () => {
     switch (technique.mode) {
-      case 'gi': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'nogi': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
-      case 'both': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-      default: return '';
+      case 'gi':
+        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'nogi':
+        return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+      case 'both':
+        return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+      default:
+        return '';
     }
   };
 
@@ -59,17 +59,19 @@ export function TechniqueCard({ technique, userMastery, onClick }: TechniqueCard
               {category?.label || technique.category}
             </p>
           </div>
-          <BeltBadge belt={technique.min_belt as any} size="sm" />
+          <BeltBadge belt={technique.min_belt} size="sm" />
         </div>
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {/* Description */}
         {technique.description && (
           <p className="text-sm text-muted-foreground line-clamp-2">
             {technique.description}
           </p>
         )}
 
+        {/* Badges */}
         <div className="flex flex-wrap gap-2">
           <Badge variant="outline" className={getDifficultyColor()}>
             {difficulty?.label || technique.difficulty}
@@ -79,17 +81,18 @@ export function TechniqueCard({ technique, userMastery, onClick }: TechniqueCard
           </Badge>
         </div>
 
+        {/* Mastery indicator if user has learned this */}
         {userMastery !== undefined && (
           <div className="pt-2 border-t border-border">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-muted-foreground">Padronanza</span>
               <span className="text-xs font-medium">{userMastery}/10</span>
             </div>
-            {/* FIX 4: rimosso showLabel={false} perché non esiste nel componente */}
-            <MasteryIndicator level={userMastery} size="sm" />
+            <MasteryIndicator level={userMastery} size="sm" showLabel={false} />
           </div>
         )}
 
+        {/* Video link if available */}
         {technique.video_url && (
           <Button
             variant="ghost"
