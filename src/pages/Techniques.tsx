@@ -9,6 +9,7 @@ import { AddTechniqueDialog } from '@/components/techniques/AddTechniqueDialog';
 export default function Techniques() {
   const [selectedCategory, setSelectedCategory] = useState<any | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Vista 2: Dettaglio Categoria (Screenshot 2)
   if (selectedCategory) {
@@ -23,8 +24,12 @@ export default function Techniques() {
             <ArrowLeft className="mr-2 h-4 w-4" /> Torna alle categorie
           </Button>
           
-          {/* Questo componente apre il form dello Screenshot 3 */}
-          <AddTechniqueDialog defaultCategory={selectedCategory.value} />
+          <Button 
+            onClick={() => setIsDialogOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Aggiungi Tecnica
+          </Button>
         </div>
 
         <div className="mt-4">
@@ -36,22 +41,26 @@ export default function Techniques() {
           </p>
         </div>
 
-        {/* Placeholder vuoto (Screenshot 2) */}
+        {/* Placeholder Stato Vuoto (Screenshot 2) */}
         <div className="flex flex-col items-center justify-center py-24 border-2 border-dashed border-[#222] rounded-2xl bg-[#111]/30 mt-8">
           <h3 className="text-xl font-semibold text-white">Nessuna tecnica trovata</h3>
-          <p className="text-muted-foreground mt-2 text-center px-4">
-            Inizia aggiungendo la tua prima tecnica per questa categoria.
-          </p>
+          <p className="text-muted-foreground mt-2">Inizia aggiungendo la tua prima tecnica per questa categoria.</p>
         </div>
+
+        {/* Il Dialog vero e proprio che hai su VSC */}
+        <AddTechniqueDialog 
+          open={isDialogOpen} 
+          onOpenChange={setIsDialogOpen} 
+        />
       </div>
     );
   }
 
-  // Vista 1: Griglia Categorie (Screenshot 1)
+  // Vista 1: Griglia (Screenshot 1)
   return (
     <div className="space-y-6 p-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white font-display">Libreria Tecniche</h1>
+        <h1 className="text-3xl font-bold text-white">Libreria Tecniche</h1>
         <p className="text-muted-foreground">{TECHNIQUE_CATEGORIES.length} categorie</p>
       </div>
 
@@ -73,7 +82,7 @@ export default function Techniques() {
             key={category.value}
             label={category.label}
             description={category.description}
-            techniqueCount={0} // Qui andrebbe il conteggio reale dal DB
+            techniqueCount={0}
             onClick={() => setSelectedCategory(category)}
           />
         ))}
