@@ -1,83 +1,145 @@
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { BookOpen, Search, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { Plus, Grid3X3, List, BookOpen, Search } from 'lucide-react';
+import { AppLayout } from '@/components/layout/AppLayout';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { TECHNIQUE_CATEGORIES } from '@/lib/constants';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const ALL_CATEGORIES = [
-  { label: "Takedowns", description: "Tecniche per portare l'avversario a terra." },
-  { label: "Guardia Chiusa", description: "Posizione fondamentale di controllo da sotto." },
-  { label: "Guardia Aperta", description: "Tecniche di controllo a distanza con piedi e gambe." },
-  { label: "Mezza Guardia", description: "Posizioni di controllo e transizione." },
-  { label: "Montada (Mount)", description: "Posizione dominante da sopra." },
-  { label: "Controllo Laterale", description: "Posizione di controllo a terra essenziale." },
-  { label: "Ginocchio sullo Stomaco", description: "Posizione di transizione e pressione." },
-  { label: "Presa della Schiena", description: "Posizione di controllo dominante strategica." },
-  { label: "Passaggio di Guardia", description: "Tecniche per superare le gambe." },
-  { label: "Ribaltamenti (Sweeps)", description: "Invertire la posizione dalla guardia." },
-  { label: "Sottomissioni (Armlocks)", description: "Finalizzazioni a gomito e spalla." },
-  { label: "Sottomissioni (Leglocks)", description: "Attacchi a caviglie, ginocchia e talloni." },
-  { label: "Strangolamenti (Chokes)", description: "Interruzione del flusso sanguigno o aria." },
-  { label: "Fughe e Difese", description: "Uscire da posizioni svantaggiose." },
-  { label: "Tecniche Avanzate", description: "Berimbolo, Worm Guard, Truck, Matrix." },
-  { label: "Grip Fighting", description: "Concetti di grip durante le lotte." },
-  { label: "Transizioni", description: "Cambi di posizione e direzione." },
-  { label: "Control Retention", description: "Mantenimento delle posizioni dominanti." },
-  { label: "Guard Retention", description: "Hip escape, granby, inversioni difensive." },
-  { label: "Standing to Ground", description: "Transizioni dalla posizione eretta." },
-  { label: "De La Riva", description: "Hook attorno alla gamba per squilibrio." },
-  { label: "Reverse DLR", description: "Presa rovesciata rispetto alla DLR standard." },
-  { label: "Single Leg X", description: "Controllo gamba singola per sweep." },
-  { label: "X-Guard", description: "Efficace per sbilanciare e ribaltare." },
-  { label: "K-Guard", description: "Combinazione di hook e prese per attacchi." },
-  { label: "50/50", description: "Posizione con gambe intrecciate simmetricamente." },
-  { label: "Worm Guard", description: "Utilizzo del bavero per sweep e back takes." },
-  { label: "Lasso Guard", description: "Controllo forte di un braccio avversario." },
-  { label: "Bodylock Passing", description: "Blocco del corpo per superare le gambe." },
-  { label: "Leg Pummeling", description: "Controllo spazio interno delle gambe." },
-  { label: "Wrestling Scrambles", description: "Granby, switch, peek-out, turtle retention." }
-];
+type ViewMode = 'categories' | 'grid';
 
 export default function Techniques() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>('categories');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [difficultyFilter, setDifficultyFilter] = useState('all');
+  const [modeFilter, setModeFilter] = useState('all');
+  const [beltFilter, setBeltFilter] = useState('all');
 
-  const filtered = ALL_CATEGORIES.filter(cat => 
-    cat.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filtro logico delle categorie
+  const filteredCategories = useMemo(() => {
+    return TECHNIQUE_CATEGORIES.filter(cat => 
+      cat.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      cat.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold font-display">Libreria Tecniche</h1>
-          <p className="text-muted-foreground">{ALL_CATEGORIES.length} categorie disponibili</p>
+    <AppLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-white">Libreria Tecniche</h1>
+            <p className="text-muted-foreground">
+              {TECHNIQUE_CATEGORIES.length} categorie fondamentali
+            </p>
+          </div>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="h-4 w-4 mr-2" />
+            Aggiungi Tecnica
+          </Button>
         </div>
-        <button className="bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:opacity-90 transition-all">
-          <Plus size={20} /> Aggiungi Tecnica
-        </button>
-      </div>
 
-      {/* Barra di Ricerca stile Lovable */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <input
-          className="w-full bg-[#1A1A1A] border border-border rounded-lg py-3 pl-10 pr-4 focus:ring-2 focus:ring-primary outline-none"
-          placeholder="Cerca tecniche..."
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+        {/* Barra di Ricerca e Filtri (Screenshot 2) */}
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Cerca per nome o descrizione..."
+              className="pl-10 bg-[#111] border-[#222]"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
 
-      {/* Grid Completa */}
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((cat, i) => (
-          <Card key={i} className="bg-[#1A1A1A] border-border hover:border-primary/50 cursor-pointer transition-all">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-bold">{cat.label}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">{cat.description}</p>
-            </CardContent>
-          </Card>
-        ))}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Select onValueChange={setDifficultyFilter}>
+              <SelectTrigger className="bg-[#111] border-[#222] text-white">
+                <SelectValue placeholder="Difficoltà" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tutte le difficoltà</SelectItem>
+                <SelectItem value="base">Base</SelectItem>
+                <SelectItem value="intermedio">Intermedio</SelectItem>
+                <SelectItem value="avanzato">Avanzato</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select onValueChange={setModeFilter}>
+              <SelectTrigger className="bg-[#111] border-[#222] text-white">
+                <SelectValue placeholder="Modalità" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tutte le modalità</SelectItem>
+                <SelectItem value="gi">Gi</SelectItem>
+                <SelectItem value="nogi">No-Gi</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select onValueChange={setBeltFilter}>
+              <SelectTrigger className="bg-[#111] border-[#222] text-white">
+                <SelectValue placeholder="Cintura" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tutte le cinture</SelectItem>
+                <SelectItem value="white">Bianca</SelectItem>
+                <SelectItem value="blue">Blu</SelectItem>
+                <SelectItem value="purple">Viola</SelectItem>
+                <SelectItem value="brown">Marrone</SelectItem>
+                <SelectItem value="black">Nera</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <div className="flex gap-2 bg-[#111] p-1 rounded-md border border-[#222]">
+               <Button 
+                variant={viewMode === 'categories' ? 'secondary' : 'ghost'} 
+                className="flex-1 h-8" 
+                onClick={() => setViewMode('categories')}
+              >
+                <List className="h-4 w-4 mr-2" /> Categorie
+              </Button>
+              <Button 
+                variant={viewMode === 'grid' ? 'secondary' : 'ghost'} 
+                className="flex-1 h-8" 
+                onClick={() => setViewMode('grid')}
+              >
+                <Grid3X3 className="h-4 w-4 mr-2" /> Griglia
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Lista Categorie */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredCategories.map((category) => (
+            <Card key={category.value} className="bg-[#111] border-[#222] hover:border-blue-500/50 transition-all cursor-pointer group">
+              <CardHeader className="flex flex-row items-center space-x-3 pb-2">
+                <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                  <BookOpen className="h-5 w-5" />
+                </div>
+                <CardTitle className="text-lg text-white">{category.label}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground leading-tight">
+                  {category.description}
+                </p>
+                <div className="mt-4 flex justify-between items-center text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                  <span>0 Tecniche</span>
+                  <span className="text-blue-500">Esplora →</span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
-    </div>
+    </AppLayout>
   );
 }
