@@ -1,23 +1,23 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AppSidebar } from "./components/layout/AppSidebar";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "@/components/ui/toaster";
 import Dashboard from "./pages/Dashboard";
 import Techniques from "./pages/Techniques";
+import Auth from "./pages/Auth";
 
-function App() {
-  return (
-    <Router>
-      <div className="flex min-h-screen bg-background text-foreground">
-        <AppSidebar />
-        <main className="flex-1 overflow-y-auto">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/techniques" element={<Techniques />} />
-            <Route path="*" element={<div className="p-8">Pagina in costruzione...</div>} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
-  );
-}
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/techniques" element={<Techniques />} />
+        <Route path="/auth" element={<Auth />} />
+      </Routes>
+    </BrowserRouter>
+    <Toaster />
+  </QueryClientProvider>
+);
 
 export default App;
