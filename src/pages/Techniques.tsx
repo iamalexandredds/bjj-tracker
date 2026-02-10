@@ -1,6 +1,8 @@
+"use client";
+
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Grid3X3, List, BookOpen } from 'lucide-react';
+import { Plus, Grid3X3, List, BookOpen, Loader2 } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,7 +15,6 @@ import { AddTechniqueDialog } from '@/components/techniques/AddTechniqueDialog';
 import { TECHNIQUE_CATEGORIES } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import type { Tables } from '@/integrations/supabase/types';
 
 type ViewMode = 'categories' | 'grid';
 
@@ -25,50 +26,27 @@ export default function Techniques() {
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [modeFilter, setModeFilter] = useState('all');
   const [beltFilter, setBeltFilter] = useState('all');
-  const [selectedTechnique, setSelectedTechnique] = useState<Tables<'techniques'> | null>(null);
+  const [selectedTechnique, setSelectedTechnique] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 
-  // Fetch all techniques
+  // 1. Fetch tecniche con protezione anti-crash
   const { data: techniques, isLoading: techniquesLoading } = useQuery({
     queryKey: ['techniques'],
     queryFn: async () => {
+      if (!supabase?.from) return []; // Se supabase non è pronto, ritorna array vuoto
       const { data, error } = await supabase
         .from('techniques')
         .select('*')
         .order('name');
       
       if (error) throw error;
-      return data;
+      return data || [];
     },
+    enabled: !!supabase?.from
   });
 
-  // Fetch user's learned techniques
-  const { data: userTechniques } = useQuery({
-    queryKey: ['user-techniques', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      const { data, error } = await supabase
-        .from('user_techniques')
-        .select('*')
-        .eq('user_id', user.id);
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
-
-  // Create a map of technique_id -> user_technique for quick lookup
-  const userTechniqueMap = useMemo(() => {
-    const map = new Map<string, Tables<'user_techniques'>>();
-    userTechniques?.forEach((ut) => {
-      map.set(ut.technique_id, ut);
-    });
-    return map;
-  }, [userTechniques]);
-
-  // Count techniques per category
+  // 2. Conteggio tecniche per categoria
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     techniques?.forEach((t) => {
@@ -77,80 +55,38 @@ export default function Techniques() {
     return counts;
   }, [techniques]);
 
-  // Filter techniques
+  // 3. Filtro tecniche
   const filteredTechniques = useMemo(() => {
     if (!techniques) return [];
-
-    return techniques.filter((technique) => {
-      // Search filter
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const matchesSearch =
-          technique.name.toLowerCase().includes(query) ||
-          technique.description?.toLowerCase().includes(query) ||
-          technique.category.toLowerCase().includes(query);
-        if (!matchesSearch) return false;
-      }
-
-      // Category filter
-      if (categoryFilter !== 'all' && technique.category !== categoryFilter) {
-        return false;
-      }
-
-      // Difficulty filter
-      if (difficultyFilter !== 'all' && technique.difficulty !== difficultyFilter) {
-        return false;
-      }
-
-      // Mode filter
-      if (modeFilter !== 'all' && technique.mode !== modeFilter && technique.mode !== 'both') {
-        return false;
-      }
-
-      // Belt filter
-      if (beltFilter !== 'all') {
-        const beltOrder = ['bianca', 'blu', 'viola', 'marrone', 'nera'];
-        const techBeltIndex = beltOrder.indexOf(technique.min_belt);
-        const filterBeltIndex = beltOrder.indexOf(beltFilter);
-        if (techBeltIndex > filterBeltIndex) return false;
-      }
-
-      return true;
+    return techniques.filter((t) => {
+      const matchesSearch = !searchQuery || t.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCat = categoryFilter === 'all' || t.category === categoryFilter;
+      const matchesDiff = difficultyFilter === 'all' || t.difficulty === difficultyFilter;
+      const matchesMode = modeFilter === 'all' || t.mode === modeFilter || t.mode === 'both';
+      return matchesSearch && matchesCat && matchesDiff && matchesMode;
     });
-  }, [techniques, searchQuery, categoryFilter, difficultyFilter, modeFilter, beltFilter]);
-
-  const handleTechniqueClick = (technique: Tables<'techniques'>) => {
-    setSelectedTechnique(technique);
-    setDialogOpen(true);
-  };
+  }, [techniques, searchQuery, categoryFilter, difficultyFilter, modeFilter]);
 
   const handleCategoryClick = (categoryValue: string) => {
     setCategoryFilter(categoryValue);
     setViewMode('grid');
   };
 
-  const selectedUserTechnique = selectedTechnique 
-    ? userTechniqueMap.get(selectedTechnique.id) 
-    : null;
-
   return (
     <AppLayout>
-      <div className="space-y-6">
-        {/* Header */}
+      <div className="space-y-6 p-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Libreria Tecniche</h1>
-            <p className="text-muted-foreground">
-              {techniques?.length || 0} tecniche disponibili in {TECHNIQUE_CATEGORIES.length} categorie
+            <h1 className="text-3xl font-bold text-white">Libreria Tecniche</h1>
+            <p className="text-zinc-400">
+              {techniques?.length || 0} tecniche in {TECHNIQUE_CATEGORIES.length} categorie
             </p>
           </div>
-          <Button onClick={() => setAddDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Aggiungi Tecnica
+          <Button onClick={() => setAddDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="h-4 w-4 mr-2" /> Aggiungi Tecnica
           </Button>
         </div>
 
-        {/* Filters */}
         <TechniqueFilters
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -164,90 +100,47 @@ export default function Techniques() {
           onBeltChange={setBeltFilter}
         />
 
-        {/* View mode toggle */}
-        <div className="flex items-center justify-between">
-          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
-            <TabsList>
-              <TabsTrigger value="categories" className="gap-2">
-                <List className="h-4 w-4" />
-                Categorie
-              </TabsTrigger>
-              <TabsTrigger value="grid" className="gap-2">
-                <Grid3X3 className="h-4 w-4" />
-                Griglia
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+        <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+          <TabsList className="bg-zinc-900 border-zinc-800">
+            <TabsTrigger value="categories"><List className="h-4 w-4 mr-2" /> Categorie</TabsTrigger>
+            <TabsTrigger value="grid"><Grid3X3 className="h-4 w-4 mr-2" /> Griglia</TabsTrigger>
+          </TabsList>
+        </Tabs>
 
-          {viewMode === 'grid' && (
-            <p className="text-sm text-muted-foreground">
-              {filteredTechniques.length} risultati
-            </p>
-          )}
-        </div>
-
-        {/* Content */}
         {techniquesLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-48" />
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 bg-zinc-900" />)}
           </div>
         ) : viewMode === 'categories' ? (
-          /* Categories view */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {TECHNIQUE_CATEGORIES.map((category) => (
+            {TECHNIQUE_CATEGORIES.map((cat) => (
               <CategoryCard
-                key={category.value}
-                label={category.label}
-                description={category.description}
-                techniqueCount={categoryCounts[category.value] || 0}
-                isSelected={categoryFilter === category.value}
-                onClick={() => handleCategoryClick(category.value)}
+                key={cat.value}
+                label={cat.label}
+                description={cat.description}
+                techniqueCount={categoryCounts[cat.value] || 0}
+                onClick={() => handleCategoryClick(cat.value)}
               />
             ))}
           </div>
         ) : (
-          /* Grid view */
-          <>
-            {filteredTechniques.length === 0 ? (
-              <div className="text-center py-12">
-                <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Nessuna tecnica trovata</h3>
-                <p className="text-muted-foreground mb-4">
-                  Prova a modificare i filtri o aggiungi nuove tecniche
-                </p>
-                <Button onClick={() => setAddDialogOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Aggiungi Tecnica
-                </Button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredTechniques.map((technique) => (
-                  <TechniqueCard
-                    key={technique.id}
-                    technique={technique}
-                    userMastery={userTechniqueMap.get(technique.id)?.mastery_level}
-                    onClick={() => handleTechniqueClick(technique)}
-                  />
-                ))}
-              </div>
-            )}
-          </>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredTechniques.map((tech) => (
+              <TechniqueCard
+                key={tech.id}
+                technique={tech}
+                onClick={() => { setSelectedTechnique(tech); setDialogOpen(true); }}
+              />
+            ))}
+          </div>
         )}
       </div>
 
-      {/* Detail Dialog */}
       <TechniqueDetailDialog
         technique={selectedTechnique}
-        userTechnique={selectedUserTechnique}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        canEdit={selectedTechnique?.created_by === user?.id}
       />
-
-      {/* Add Technique Dialog */}
       <AddTechniqueDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} />
     </AppLayout>
   );
