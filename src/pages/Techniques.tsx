@@ -12,17 +12,17 @@ export default function Techniques() {
 
   return (
     <AppLayout>
-      <div className="p-6 space-y-6">
-        <div>
+      <div className="space-y-6">
+        <header>
           <h1 className="text-3xl font-bold text-white">Libreria Tecniche</h1>
-          <p className="text-zinc-400">Esplora le 31 categorie fondamentali</p>
-        </div>
+          <p className="text-zinc-400">Seleziona una categoria per iniziare</p>
+        </header>
 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
           <input 
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg py-3 pl-10 text-white"
-            placeholder="Cerca categoria..."
+            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg py-3 pl-10 text-white focus:ring-2 focus:ring-blue-600 outline-none"
+            placeholder="Cerca tra le 31 categorie..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -30,12 +30,12 @@ export default function Techniques() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((cat) => (
-            <div key={cat.value} className="p-5 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-blue-500 cursor-pointer group">
+            <div key={cat.value} className="p-5 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-blue-500/50 transition-all cursor-pointer group">
               <div className="flex items-center gap-3 mb-2">
                 <BookOpen className="h-5 w-5 text-blue-500" />
                 <h3 className="font-bold text-white group-hover:text-blue-400">{cat.label}</h3>
               </div>
-              <p className="text-sm text-zinc-400 leading-tight">{cat.description}</p>
+              <p className="text-sm text-zinc-400 line-clamp-2">{cat.description}</p>
             </div>
           ))}
         </div>
