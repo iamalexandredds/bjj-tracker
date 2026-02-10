@@ -1,109 +1,173 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/hooks/useAuth';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Calendar, Target, TrendingUp, Clock, Plus, ChevronRight } from 'lucide-react';
+import { BeltBadge } from '@/components/ui/BeltBadge';
+import { MasteryIndicator } from '@/components/ui/MasteryIndicator';
+import { 
+  BookOpen, 
+  Calendar, 
+  Target, 
+  TrendingUp, 
+  Clock, 
+  Plus,
+  ChevronRight 
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
-  const profile = { full_name: "Alexandre Dias", belt: "marrone", stripes: 0 };
-  
-  const stats = [
-    { label: "Tecniche Apprese", value: "0", sub: "su 31 categorie", icon: BookOpen, color: "text-blue-500" },
-    { label: "Ore di Allenamento", value: "0", sub: "questo mese", icon: Clock, color: "text-green-500" },
-    { label: "Obiettivi Attivi", value: "0", sub: "in corso", icon: Target, color: "text-orange-500" },
-    { label: "Progresso Settimanale", value: "+0%", sub: "", icon: TrendingUp, color: "text-cyan-500" },
-  ];
+  const { profile, role } = useAuth();
+
+  // Mock stats - Identiche a Lovable
+  const stats = {
+    techniquesLearned: 0,
+    trainingHours: 0,
+    activeGoals: 0,
+    weeklyProgress: 0,
+  };
 
   return (
-    <div className="space-y-8 p-6 lg:p-10 bg-[#0a0a0a] min-h-screen text-white">
-      <div className="flex justify-between items-center">
+    <div className="space-y-8 animate-fade-in p-6 lg:p-10">
+      {/* Header - Stile Lovable */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-display">Benvenuto, {profile.full_name.split(' ')[0]}! 🥋</h1>
-          <p className="text-muted-foreground">Traccia il tuo percorso nel Brazilian Jiu-Jitsu</p>
+          <h1 className="text-3xl font-display font-bold text-foreground">
+            Benvenuto, {profile?.full_name?.split(' ')[0] || 'Praticante'}! 🥋
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            {role === 'coach' ? 'Gestisci i tuoi studenti e monitora i progressi' : 'Traccia il tuo percorso nel Brazilian Jiu-Jitsu'}
+          </p>
         </div>
-        <div className="bg-[#3d2b1f] text-[#d48c5c] px-4 py-1 rounded-full font-bold text-sm border border-[#d48c5c]/30 uppercase">
-          {profile.belt}
-        </div>
+        {profile && (
+          <BeltBadge belt={profile.belt} stripes={profile.stripes} size="lg" />
+        )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
-        {stats.map((stat, i) => (
-          <Card key={i} className="bg-[#111] border-[#222]">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <span className="text-xs font-medium text-muted-foreground uppercase">{stat.label}</span>
-              <stat.icon className={`h-4 w-4 ${stat.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-[10px] text-muted-foreground">{stat.sub}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="bg-[#111] border-[#222]">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg font-bold">
-              <Calendar className="h-5 w-5 text-blue-500" /> Nuovo Allenamento
-            </CardTitle>
+      {/* Stats Grid - Le 4 card di Lovable */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-card border-border hover:border-primary/50 transition-colors">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Tecniche Apprese</CardTitle>
+            <BookOpen className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold">
-              <Link to="/training"><Plus className="mr-2 h-4 w-4" /> Registra Allenamento</Link>
+            <div className="text-2xl font-bold">{stats.techniquesLearned}</div>
+            <p className="text-xs text-muted-foreground">su 31 categorie disponibili</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card border-border hover:border-primary/50 transition-colors">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Ore di Allenamento</CardTitle>
+            <Clock className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.trainingHours}</div>
+            <p className="text-xs text-muted-foreground">questo mese</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card border-border hover:border-primary/50 transition-colors">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Obiettivi Attivi</CardTitle>
+            <Target className="h-4 w-4 text-orange-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.activeGoals}</div>
+            <p className="text-xs text-muted-foreground">in corso</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card border-border hover:border-primary/50 transition-colors">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Progresso Settimanale</CardTitle>
+            <TrendingUp className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">+{stats.weeklyProgress}%</div>
+            <MasteryIndicator level={stats.weeklyProgress} size="sm" />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Actions - I 3 bottoni centrali */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="bg-card border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" /> Nuovo Allenamento
+            </CardTitle>
+            <CardDescription>Registra una nuova sessione di training</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild className="w-full">
+              <Link to="/training/new">
+                <Plus className="mr-2 h-4 w-4" /> Registra Allenamento
+              </Link>
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#111] border-[#222]">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg font-bold">
+            <CardTitle className="flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-purple-500" /> Esplora Tecniche
             </CardTitle>
+            <CardDescription>Sfoglia la libreria delle 31 categorie BJJ</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="secondary" asChild className="w-full bg-[#1a1a1a] border-none text-white hover:bg-[#252525]">
-              <Link to="/techniques">Vai alla Libreria <ChevronRight className="ml-2 h-4 w-4" /></Link>
+            <Button variant="secondary" asChild className="w-full">
+              <Link to="/techniques">
+                Vai alla Libreria <ChevronRight className="ml-2 h-4 w-4" />
+              </Link>
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#111] border-[#222]">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg font-bold">
+            <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5 text-orange-500" /> Imposta Obiettivo
             </CardTitle>
+            <CardDescription>Crea un nuovo obiettivo da raggiungere</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="secondary" asChild className="w-full bg-[#1a1a1a] border-none text-white hover:bg-[#252525]">
-              <Link to="/goals"><Plus className="mr-2 h-4 w-4" /> Nuovo Obiettivo</Link>
+            <Button variant="secondary" asChild className="w-full">
+              <Link to="/goals/new">
+                <Plus className="mr-2 h-4 w-4" /> Nuovo Obiettivo
+              </Link>
             </Button>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="bg-[#111] border-[#222]">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg font-bold">
-            <TrendingUp className="h-5 w-5 text-yellow-600" /> Il Tuo Percorso
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4">
-            <div className="bg-[#3d2b1f] text-[#d48c5c] px-6 py-2 rounded-md font-bold border border-[#d48c5c]/30 uppercase">
-              {profile.belt}
-            </div>
-            <div className="flex-1">
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-muted-foreground uppercase">Gradi</span>
-                <span className="text-white">0/4</span>
+      {/* Belt Progress - La barra in basso */}
+      {profile && (
+        <Card className="bg-card border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-yellow-600" /> Il Tuo Percorso
+            </CardTitle>
+            <CardDescription>Progresso verso la prossima cintura</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4">
+              <BeltBadge belt={profile.belt} stripes={profile.stripes} />
+              <div className="flex-1">
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-muted-foreground">Progresso cintura attuale</span>
+                  <span className="font-medium">{profile.stripes}/4 gradi</span>
+                </div>
+                <div className="h-3 rounded-full bg-muted overflow-hidden">
+                  <div 
+                    className="h-full rounded-full bg-primary transition-all duration-500"
+                    style={{ width: `${(profile.stripes / 4) * 100}%` }}
+                  />
+                </div>
               </div>
-              <div className="h-2 bg-[#1a1a1a] rounded-full">
-                <div className="h-full bg-[#d48c5c] w-0" />
-              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
