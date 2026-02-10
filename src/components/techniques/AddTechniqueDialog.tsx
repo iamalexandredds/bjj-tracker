@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+// AGGIUNTI GLI IMPORT MANCANTI CHE CAUSAVANO IL CRASH
 import { TECHNIQUE_CATEGORIES, BELT_LEVELS } from '@/lib/constants';
 
 const techniqueSchema = z.object({
@@ -46,8 +47,7 @@ export function AddTechniqueDialog({ open, onOpenChange }: { open: boolean; onOp
 
   const createTechnique = useMutation({
     mutationFn: async (data: z.infer<typeof techniqueSchema>) => {
-      if (!user?.id) throw new Error('Devi essere autenticato per aggiungere una tecnica');
-      
+      if (!user?.id) throw new Error('Devi essere autenticato');
       const { error } = await supabase.from('techniques').insert({
         name: data.name,
         category: data.category,
@@ -58,18 +58,15 @@ export function AddTechniqueDialog({ open, onOpenChange }: { open: boolean; onOp
         video_url: data.video_url || null,
         created_by: user.id,
       });
-      
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['techniques'] });
-      toast.success('Tecnica aggiunta con successo');
+      toast.success('Tecnica aggiunta correttamente');
       form.reset();
       onOpenChange(false);
     },
-    onError: (error: any) => {
-      toast.error(`Errore nel salvataggio: ${error.message}`);
-    },
+    onError: (error: any) => toast.error(`Errore: ${error.message}`),
   });
 
   return (
@@ -79,12 +76,17 @@ export function AddTechniqueDialog({ open, onOpenChange }: { open: boolean; onOp
         <Form {...form}>
           <form onSubmit={form.handleSubmit((data) => createTechnique.mutate(data))} className="space-y-4">
             <FormField control={form.control} name="name" render={({ field }) => (
-              <FormItem><FormLabel>Nome Tecnica *</FormLabel><FormControl><Input placeholder="es. Armbar" {...field} className="bg-zinc-900 border-zinc-800" /></FormControl><FormMessage /></FormItem>
+              <FormItem>
+                <FormLabel>Nome Tecnica *</FormLabel>
+                <FormControl><Input placeholder="es. Armbar" {...field} className="bg-zinc-900 border-zinc-800" /></FormControl>
+                <FormMessage />
+              </FormItem>
             )} />
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField control={form.control} name="category" render={({ field }) => (
-                <FormItem><FormLabel>Categoria *</FormLabel>
+                <FormItem>
+                  <FormLabel>Categoria *</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl><SelectTrigger className="bg-zinc-900 border-zinc-800"><SelectValue placeholder="Scegli" /></SelectTrigger></FormControl>
                     <SelectContent>
@@ -94,7 +96,8 @@ export function AddTechniqueDialog({ open, onOpenChange }: { open: boolean; onOp
                 </FormItem>
               )} />
               <FormField control={form.control} name="min_belt" render={({ field }) => (
-                <FormItem><FormLabel>Cintura Minima</FormLabel>
+                <FormItem>
+                  <FormLabel>Cintura Minima</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl><SelectTrigger className="bg-zinc-900 border-zinc-800"><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
