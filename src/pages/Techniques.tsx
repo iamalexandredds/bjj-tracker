@@ -11,7 +11,7 @@ export default function Techniques() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Vista 2: Dettaglio Categoria (Screenshot 2)
+  // Vista Dettaglio (Screen 2)
   if (selectedCategory) {
     return (
       <div className="space-y-6 p-4 animate-in fade-in duration-300">
@@ -41,13 +41,11 @@ export default function Techniques() {
           </p>
         </div>
 
-        {/* Placeholder Stato Vuoto (Screenshot 2) */}
         <div className="flex flex-col items-center justify-center py-24 border-2 border-dashed border-[#222] rounded-2xl bg-[#111]/30 mt-8">
           <h3 className="text-xl font-semibold text-white">Nessuna tecnica trovata</h3>
           <p className="text-muted-foreground mt-2">Inizia aggiungendo la tua prima tecnica per questa categoria.</p>
         </div>
 
-        {/* Il Dialog vero e proprio che hai su VSC */}
         <AddTechniqueDialog 
           open={isDialogOpen} 
           onOpenChange={setIsDialogOpen} 
@@ -56,12 +54,12 @@ export default function Techniques() {
     );
   }
 
-  // Vista 1: Griglia (Screenshot 1)
+  // Vista Griglia (Screen 1)
   return (
     <div className="space-y-6 p-4">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white">Libreria Tecniche</h1>
-        <p className="text-muted-foreground">{TECHNIQUE_CATEGORIES.length} categorie</p>
+        <p className="text-muted-foreground">{(TECHNIQUE_CATEGORIES || []).length} categorie</p>
       </div>
 
       <div className="relative">
@@ -75,7 +73,7 @@ export default function Techniques() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {TECHNIQUE_CATEGORIES.filter(c => 
+        {(TECHNIQUE_CATEGORIES || []).filter(c => 
           c.label.toLowerCase().includes(searchTerm.toLowerCase())
         ).map((category) => (
           <CategoryCard 
