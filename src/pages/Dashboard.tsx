@@ -1,72 +1,76 @@
-import { BookOpen, TrendingUp, Award, Clock } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { BookOpen, TrendingUp, Calendar, Target, Plus } from 'lucide-react';
 
 export default function Dashboard() {
-  const profile = { full_name: 'Atleta', belt: 'Blue', stripes: 2 };
+  // Dati temporanei (per evitare il crash di useAuth)
+  const profile = { full_name: 'Praticante', belt: 'brown', stripes: 0 };
+  const stats = { techniquesLearned: 0, weeklyProgress: 0 };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-10">
-      {/* Header con stile Lovable */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-border">
+    <div className="p-6 lg:p-10 space-y-8 max-w-7xl mx-auto">
+      
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold tracking-tight">
-            Oss, {profile.full_name}! 🥋
+          <h1 className="text-3xl font-bold tracking-tight">
+            Benvenuto, {profile.full_name}! 🥋
           </h1>
-          <p className="text-muted-foreground text-lg mt-2">
-            Il tuo viaggio verso la Cintura Nera continua.
-          </p>
+          <p className="text-muted-foreground">Traccia il tuo percorso nel Brazilian Jiu-Jitsu</p>
         </div>
-        
-        {/* Simulazione BeltBadge */}
-        <div className="flex items-center gap-4 bg-secondary/50 p-4 rounded-2xl border border-primary/20">
-          <div className="h-10 w-24 bg-blue-600 rounded shadow-[0_0_15px_rgba(37,99,235,0.4)] flex items-center justify-center border-y-4 border-black">
-            <div className="flex gap-1">
-                {[...Array(profile.stripes)].map((_, i) => (
-                    <div key={i} className="w-1 h-full bg-white"></div>
-                ))}
-            </div>
-          </div>
-          <div>
-            <p className="text-xs uppercase font-bold text-muted-foreground">Grado Attuale</p>
-            <p className="font-bold">{profile.belt} Belt</p>
-          </div>
+        <div className="bg-[#3D2B1F] text-[#E6B17E] px-4 py-1.5 rounded-full text-sm font-bold border border-[#E6B17E]/20 uppercase">
+          Cintura {profile.belt}
         </div>
       </div>
 
-      {/* Grid delle Statistiche */}
+      {/* Grid Statistiche */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-[#121212] border-border shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-xs font-medium text-muted-foreground uppercase">Tecniche</CardTitle>
+            <BookOpen className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.techniquesLearned}</div>
+            <p className="text-[10px] text-muted-foreground mt-1">su 31 categorie</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-[#121212] border-border shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-xs font-medium text-muted-foreground uppercase">Progresso</CardTitle>
+            <TrendingUp className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">+{stats.weeklyProgress}%</div>
+            <p className="text-[10px] text-muted-foreground mt-1">Trend settimanale</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Azioni Rapide (Stile Lovable Console) */}
       <div className="grid gap-6 md:grid-cols-3">
-        <div className="bg-card p-6 rounded-2xl border border-border hover:border-primary/50 transition-all shadow-glow">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-primary/10 rounded-xl text-primary">
-                <BookOpen size={24} />
-            </div>
-            <h3 className="font-bold">Tecniche</h3>
-          </div>
-          <div className="text-3xl font-bold">12</div>
-          <p className="text-xs text-muted-foreground mt-2">4 nuove questa settimana</p>
+        <div className="bg-[#121212] p-6 rounded-xl border border-border flex flex-col items-center text-center space-y-4">
+          <div className="p-3 bg-blue-600/10 rounded-full"><Calendar className="text-blue-500" /></div>
+          <h3 className="font-bold uppercase text-sm">Nuovo Allenamento</h3>
+          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium transition-colors">
+            <Plus size={16} /> Registra
+          </button>
         </div>
 
-        <div className="bg-card p-6 rounded-2xl border border-border">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-blue-500/10 rounded-xl text-blue-500">
-                <Clock size={24} />
-            </div>
-            <h3 className="font-bold">Tempo sul mat</h3>
-          </div>
-          <div className="text-3xl font-bold">48h</div>
-          <p className="text-xs text-muted-foreground mt-2">Media: 3 sessioni/sett</p>
+        <div className="bg-[#121212] p-6 rounded-xl border border-border flex flex-col items-center text-center space-y-4">
+          <div className="p-3 bg-purple-600/10 rounded-full"><BookOpen className="text-purple-500" /></div>
+          <h3 className="font-bold uppercase text-sm">Libreria</h3>
+          <button className="w-full bg-[#1E1E1E] hover:bg-[#252525] text-white py-2 rounded-lg text-sm font-medium border border-border transition-colors">
+            Sfoglia
+          </button>
         </div>
 
-        <div className="bg-card p-6 rounded-2xl border border-border">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-amber-500/10 rounded-xl text-amber-500">
-                <Award size={24} />
-            </div>
-            <h3 className="font-bold">Padronanza</h3>
-          </div>
-          <div className="text-3xl font-bold">65%</div>
-          <div className="w-full bg-secondary h-2 rounded-full mt-4 overflow-hidden">
-            <div className="bg-amber-500 h-full w-[65%]"></div>
-          </div>
+        <div className="bg-[#121212] p-6 rounded-xl border border-border flex flex-col items-center text-center space-y-4">
+          <div className="p-3 bg-amber-600/10 rounded-full"><Target className="text-amber-500" /></div>
+          <h3 className="font-bold uppercase text-sm">Obiettivo</h3>
+          <button className="w-full bg-[#1E1E1E] hover:bg-[#252525] text-white py-2 rounded-lg text-sm font-medium border border-border transition-colors">
+            Imposta
+          </button>
         </div>
       </div>
     </div>
