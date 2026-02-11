@@ -67,7 +67,7 @@ export default function Dashboard() {
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Ore di Allenamento
               </CardTitle>
-              <Clock className="h-4 w-4 text-success" />
+              <Clock className="h-4 w-4 text-[#22c55e]" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.trainingHours}</div>
@@ -196,3 +196,4 @@ export default function Dashboard() {
     </AppLayout>
   );
 }
+
