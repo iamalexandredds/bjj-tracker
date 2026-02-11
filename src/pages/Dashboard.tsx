@@ -2,7 +2,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BeltBadge } from '@/components/BeltBadge';
 import { MasteryIndicator } from '@/components/MasteryIndicator';
 import { 
   BookOpen, 
@@ -196,3 +195,4 @@ export default function Dashboard() {
     </AppLayout>
   );
 }
+
