@@ -6,26 +6,26 @@
 
 @layer base {
   :root {
-    /* BJJ Dark Theme */
-    --background: 0 0% 4%;
-    --foreground: 0 0% 95%;
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 64%;
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 95%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 217 91% 60%;
+    /* BJJ Dark Theme - Zinc/Deep Black */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
     --radius: 0.75rem;
 
     /* Belt Colors */
@@ -35,9 +35,6 @@
     --belt-brown: 30 75% 28%;
     --belt-black: 0 0% 5%;
     --belt-gold: 45 93% 47%;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(263 70% 50%) 100%);
   }
 
   * {
@@ -45,25 +42,30 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
   }
 
+  /* Titoli stile Oswald (BJJ Aggressive) */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-semibold tracking-tight;
+    font-family: 'Oswald', sans-serif;
+    @apply uppercase tracking-tight;
   }
 }
 
 @layer components {
-  .belt-badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider;
+  .glass-card {
+    @apply bg-zinc-900/50 border-zinc-800 backdrop-blur-sm hover:border-zinc-700 transition-all;
   }
-  .belt-blue { @apply bg-blue-500 text-white; }
-  .belt-purple { @apply bg-purple-500 text-white; }
-  .belt-brown { @apply bg-amber-800 text-white; }
-  .belt-black { @apply bg-gray-900 text-white border border-amber-500; }
 
-  .gradient-text {
-    @apply bg-clip-text text-transparent;
-    background-image: var(--gradient-primary);
+  .belt-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border;
   }
+  
+  /* Classi utilità per colori cinture */
+  .belt-white { @apply bg-zinc-100 text-black border-zinc-300; }
+  .belt-blue { @apply bg-blue-600/20 text-blue-500 border-blue-600/50; }
+  .belt-purple { @apply bg-purple-600/20 text-purple-500 border-purple-600/50; }
+  .belt-brown { @apply bg-amber-900/20 text-amber-500 border-amber-900/50; }
+  .belt-black { @apply bg-zinc-900 text-zinc-400 border-zinc-700; }
 }
